@@ -1,0 +1,71 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node / Frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# App runtime storage
+backend/storage/uploads/
+backend/storage/results/
+
+# Data (large files — upload to HuggingFace/Colab, not git)
+datasets/
+
+# Model weights (download, don't store)
+*.pt
+*.onnx
+*.pth
+!models/*.py
+hf_yolo_esi_model/
+hf_export_v6/
+
+
+# Training outputs
+results/
+runs/
+experiments/
+mock_runs/
+reports/visual_qa/
+SIH_01/
+SIH_demo/
+
+# Logs
+*.log
+wandb/
+mlruns/
+
+# Temp
+*.tmp
+*.bak
+
+# Zip files (use Colab, not git)
+*.zip
+*.tar.gz
+*.tar.gz.part_*
+
+# Local notebooks (keep only Colab ones)
+Downloads/*.ipynb
+lessons
