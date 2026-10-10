@@ -194,6 +194,54 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({ analysis, verdicts =
           </div>
         </div>
       )}
+
+      {/* Benthic Ecological Assessment (Bedrock / AI Engine) */}
+      {analysis.benthic_assessment && (
+        <div className="bg-slate-950/50 border border-slate-800 rounded p-2.5 flex flex-col gap-2">
+          <div className="flex items-center justify-between text-[11px] border-b border-slate-800 pb-1">
+            <span className="flex items-center gap-1 font-semibold text-slate-200">
+              <ShieldCheck className="h-3.5 w-3.5 text-cyan-400" />
+              Benthic Ecological Risk
+            </span>
+            <span className="text-[10px] text-cyan-400 bg-cyan-950/60 border border-cyan-800/60 px-1.5 py-0.5 rounded">
+              {analysis.benthic_assessment.provider === 'amazon_bedrock' ? 'AWS Bedrock' : 'Acoustic AI'}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] text-slate-400">Threat Index:</span>
+            <span
+              className={`text-xs font-bold px-2 py-0.5 rounded ${
+                analysis.benthic_assessment.ecological_risk_level === 'CRITICAL'
+                  ? 'bg-rose-950/80 text-rose-300 border border-rose-800'
+                  : analysis.benthic_assessment.ecological_risk_level === 'HIGH'
+                  ? 'bg-amber-950/80 text-amber-300 border border-amber-800'
+                  : 'bg-emerald-950/80 text-emerald-300 border border-emerald-800'
+              }`}
+            >
+              {analysis.benthic_assessment.ecological_risk_level} ({analysis.benthic_assessment.risk_score}/100)
+            </span>
+          </div>
+
+          <p className="text-[11px] text-slate-300 leading-snug">
+            {analysis.benthic_assessment.summary}
+          </p>
+
+          {analysis.benthic_assessment.impact_points && analysis.benthic_assessment.impact_points.length > 0 && (
+            <ul className="text-[10px] text-slate-400 list-disc list-inside space-y-0.5">
+              {analysis.benthic_assessment.impact_points.map((pt, i) => (
+                <li key={i}>{pt}</li>
+              ))}
+            </ul>
+          )}
+
+          <div className="mt-1 pt-1 border-t border-slate-800/80 text-[10px] text-slate-400">
+            <span className="font-semibold text-slate-300">ROV Protocol: </span>
+            {analysis.benthic_assessment.salvage_recommendation}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+

@@ -51,12 +51,21 @@ def test_full_e2e():
     result = resp.json()
     analysis_id = result.get("analysis_id")
     detections = result.get("detections", [])
+    benthic = result.get("benthic_assessment")
+    aws_artifacts = result.get("aws_artifacts", {})
     print(f"✅ Analysis Successful!")
     print(f"   Analysis ID: {analysis_id}")
     print(f"   Inference Time: {result.get('timing', {}).get('inference_ms')} ms")
     print(f"   Detections Found: {len(detections)}")
     for i, det in enumerate(detections, 1):
         print(f"     [{i}] Class: {det.get('class_name')} | Conf: {det.get('confidence'):.2f} | Threat: {det.get('threat_score')}")
+
+    assert benthic is not None, "benthic_assessment missing from response"
+    print(f"   Benthic Assessment ({benthic.get('provider')}):")
+    print(f"     Risk Level: {benthic.get('ecological_risk_level')} ({benthic.get('risk_score')}/100)")
+    print(f"     Summary: {benthic.get('summary')}")
+    print(f"   AWS S3 Artifacts Uploaded: {len(aws_artifacts)} objects")
+
 
     # 4. Analyze GeoTIFF sample with real WGS84 coordinates
     print("\n[Step 4] Analyzing GeoTIFF with geospatial solver (sample_noaa_geotiff_debris.tif)...")

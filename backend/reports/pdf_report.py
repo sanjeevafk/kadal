@@ -323,15 +323,47 @@ def create_pdf_report(
             "due to absence of embedded geotag metadata."
         )
 
+    story.append(Paragraph(interp_text, body_style))
+    story.append(Spacer(1, 8))
+
+    # 5. Ecological & Environmental Impact Assessment (Bedrock / Rule Engine)
+    benthic = analysis_data.get("benthic_assessment") or {}
+    if benthic:
+        risk_lvl = benthic.get("ecological_risk_level", "LOW")
+        risk_score = benthic.get("risk_score", 0)
+        provider_name = "Amazon Bedrock (Claude 3.5 Sonnet)" if benthic.get("provider") == "amazon_bedrock" else "Acoustic Intelligence Benthic Model"
+        
+        risk_color = "#16a34a" if risk_lvl == "LOW" else ("#ca8a04" if risk_lvl == "MODERATE" else ("#ea580c" if risk_lvl == "HIGH" else "#dc2626"))
+        
+        story.append(Paragraph(f"5. Benthic Ecological Impact Assessment <font size='8' color='#64748b'>({provider_name})</font>", section_heading_style))
+        
+        eco_summary_html = (
+            f"<b>Risk Level:</b> <font color='{risk_color}'><b>{risk_lvl} ({risk_score}/100)</b></font> &nbsp;|&nbsp; "
+            f"<b>Ecological Impact:</b> {benthic.get('summary', 'Standard acoustic profile.')}"
+        )
+        story.append(Paragraph(eco_summary_html, body_style))
+        story.append(Spacer(1, 4))
+        
+        impacts = benthic.get("impact_points", [])
+        if impacts:
+            story.append(Paragraph("<b>Primary Benthic Vulnerabilities:</b>", body_style))
+            for pt in impacts:
+                story.append(Paragraph(f"• {pt}", body_style))
+            story.append(Spacer(1, 4))
+            
+        salvage_rec = benthic.get("salvage_recommendation")
+        if salvage_rec:
+            story.append(Paragraph(f"<b>Recommended Maritime Intervention / ROV Protocol:</b> {salvage_rec}", body_style))
+            story.append(Spacer(1, 6))
+
     disclaimer_text = (
         "<font size='7' color='#64748b'><b>Operational Disclaimer:</b> This report is generated automatically by the "
-        "KADAL YOLOv8-ESI remote sensing inference pipeline. The model functions as a multi-source acoustic "
-        "target classifier trained across NOAA, MILCO, and Kaggle side-scan sonar datasets.</font>"
+        "KADAL YOLOv8-ESI remote sensing inference pipeline integrated with Amazon S3 cloud registry and Amazon Bedrock ecological analysis. "
+        "The model functions as a multi-source acoustic target classifier trained across NOAA, MILCO, and Kaggle side-scan sonar datasets.</font>"
     )
 
-    story.append(Paragraph(interp_text, body_style))
-    story.append(Spacer(1, 4))
     story.append(Paragraph(disclaimer_text, body_style))
+
 
     # Build PDF
     doc.build(story)

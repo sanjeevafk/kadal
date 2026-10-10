@@ -231,14 +231,38 @@ To run live GPU/CPU ONNX tensor inference:
    ```
 2. Restart the app (`./start.sh`). The backend will automatically bind the model and display execution provider details (`CUDAExecutionProvider` or `CPUExecutionProvider`).
 
-### 3. Uploads With Geolocation
-`POST /api/analyze` auto-resolves real-world coordinates, no model changes needed:
-* **GeoTIFF** (embedded transform/CRS) and **EXIF-GPS JPGs** work out of the box.
-* Plain PNG/JPG + georeferencing sidecars (`.tfw`, `.jgw`, `.pgw`, `.wld`, `.prj`, `.aux.xml`) via the optional `sidecars` form field.
-* Native `.XTF` waterfall files are also accepted where available (slant-range helper applied when telemetry is present).
-* Detections from files with no survey metadata return pixel boxes with an explicit non-georeferenced status — coordinates are never fabricated.
+## AWS Cloud Architecture & Environmental Intelligence Integration
+
+KADAL integrates cloud native services to support scalable oceanic survey archival, multi-vessel telemetry sync, and GenAI-powered ecological impact modeling:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                           KADAL SURVEY PIPELINE                                 │
+│                                                                                 │
+│   Sonar Ingestion         YOLOv8-ESI Inference        AWS Cloud Integration     │
+│   ┌─────────────┐         ┌───────────────────┐       ┌───────────────────────┐ │
+│   │ GeoTIFF/XTF │ ──────> │ ONNX Runtime Edge │ ────> │ Amazon S3             │ │
+│   │ Imagery     │         │ Acoustic Physics  │       │ Survey Artifact Store │ │
+│   └─────────────┘         └───────────────────┘       └──────────┬────────────┘ │
+│                                                                  │              │
+│                                                       ┌──────────▼────────────┐ │
+│                                                       │ Amazon Bedrock        │ │
+│                                                       │ Claude 3.5 Sonnet     │ │
+│                                                       │ Benthic Impact Model  │ │
+│                                                       └───────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+1. **Amazon S3 (`kadal-marine-intelligence`)**:
+   - Secure persistent storage for high-resolution side-scan sonar GeoTIFFs, full survey waterfalls, generated publication-grade PDF intelligence dossiers, and CSV/KML/NMEA tactical target bundles.
+   - Presigned access URLs allow distributed hydrographic survey teams and maritime cleanup vessels to retrieve mission plans securely.
+2. **Amazon Bedrock (`anthropic.claude-3-5-sonnet-20241022-v2:0`)**:
+   - Generates automated **Benthic Ecological Risk Assessments** and ROV salvage protocols directly from target mensuration and acoustic material density profiles.
+   - Evaluates ghost gear entanglement threats, heavy metal seabed contamination, and hydrodynamic current disruption.
+   - Includes seamless, deterministic offline domain calibration when running edge deployments without active satellite/cloud connectivity.
 
 ## Alignment with Global Environmental Goals
+
 
 * **UN SDG 14: Life Below Water**: Autonomous spatial mapping of benthic plastics, ghost gear, and discarded fishing nets to direct cleanup vessels to high-density debris hotspots.
 * **Marine Habitat Protection & Blue Economy**: Deep-tech AI for coastal environmental surveillance, sanctuary preservation, and reef protection.

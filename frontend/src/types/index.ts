@@ -106,6 +106,15 @@ export interface AnalysisSummary {
   noise_filtering_active?: boolean;
 }
 
+export interface BenthicEcologicalAssessment {
+  ecological_risk_level: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL';
+  risk_score: number;
+  summary: string;
+  impact_points: string[];
+  salvage_recommendation: string;
+  provider: 'amazon_bedrock' | 'rule_based_engine';
+}
+
 export interface AnalysisResponse {
   analysis_id: string;
   timestamp: string;
@@ -114,6 +123,8 @@ export interface AnalysisResponse {
   file_metadata: FileMetadata;
   geospatial_metadata: GeospatialMetadata;
   model_metadata: ModelMetadata;
+  benthic_assessment?: BenthicEcologicalAssessment | null;
+  aws_artifacts?: Record<string, string> | null;
   original_image_url: string;
   annotated_image_url: string;
   detection_mask_url: string;
@@ -126,6 +137,7 @@ export interface AnalysisResponse {
   kml_export_url?: string;
   bundle_export_url?: string;
 }
+
 
 export interface SampleItem {
   id: string;

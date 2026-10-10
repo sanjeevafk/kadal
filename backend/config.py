@@ -58,3 +58,11 @@ MODEL_CLASSES = {
     3: "wreck"
 }
 
+# AWS Cloud Settings
+AWS_REGION = os.getenv("AWS_REGION", os.getenv("AWS_DEFAULT_REGION", "ap-south-1"))
+AWS_S3_BUCKET = os.getenv("KADAL_S3_BUCKET", "kadal-marine-intelligence")
+AWS_BEDROCK_MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "anthropic.claude-3-5-sonnet-20241022-v2:0")
+AWS_BEDROCK_REGION = os.getenv("AWS_BEDROCK_REGION", "us-east-1")
+ENABLE_AWS_SYNC = os.getenv("ENABLE_AWS_SYNC", "true").lower() in ("true", "1", "yes")
+
+

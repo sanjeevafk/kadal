@@ -59,7 +59,14 @@ export const Header: React.FC<HeaderProps> = ({ modelInfo, isAnalyzing }) => {
               <span className="text-slate-300">{modelInfo.execution_provider.replace('ExecutionProvider', '')}</span>
             </div>
           )}
+
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-orange-950/40 border border-orange-800/60 text-orange-300">
+            <span className="h-2 w-2 rounded-full bg-orange-400 animate-pulse" />
+            <span className="text-orange-400/80">AWS:</span>
+            <span className="text-orange-300 font-semibold">S3 + BEDROCK</span>
+          </div>
         </div>
+
       </div>
     </header>
   );

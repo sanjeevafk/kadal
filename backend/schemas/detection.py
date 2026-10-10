@@ -103,6 +103,13 @@ class AnalysisSummary(BaseModel):
     message: str
     noise_filtering_active: bool = Field(default=True, description="Whether adaptive Rayleigh speckle and clutter suppression is active")
 
+class BenthicEcologicalAssessment(BaseModel):
+    ecological_risk_level: str = Field(..., description="LOW, MODERATE, HIGH, or CRITICAL")
+    risk_score: int = Field(..., description="Calculated benthic disruption score [0-100]")
+    summary: str = Field(..., description="Executive ecological assessment narrative")
+    impact_points: List[str] = Field(default_factory=list, description="Key environmental vulnerability findings")
+    salvage_recommendation: str = Field(..., description="Recommended ROV / salvage intervention method")
+    provider: str = Field(default="rule_based_engine", description="amazon_bedrock or rule_based_engine")
 
 class AnalysisResponse(BaseModel):
     analysis_id: str
@@ -112,6 +119,8 @@ class AnalysisResponse(BaseModel):
     file_metadata: FileMetadata
     geospatial_metadata: GeospatialMetadata
     model_metadata: ModelMetadata
+    benthic_assessment: Optional[BenthicEcologicalAssessment] = None
+    aws_artifacts: Optional[Dict[str, str]] = Field(default_factory=dict, description="S3 URIs for uploaded survey assets if AWS sync is enabled")
     original_image_url: str
     annotated_image_url: str
     detection_mask_url: str
@@ -123,3 +132,4 @@ class AnalysisResponse(BaseModel):
     nmea_export_url: Optional[str] = None
     kml_export_url: Optional[str] = None
     bundle_export_url: Optional[str] = None
+

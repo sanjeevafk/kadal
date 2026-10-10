@@ -30,11 +30,14 @@ from backend.reports.csv_report import generate_csv_report
 from backend.reports.json_report import generate_json_report
 from backend.reports.nmea_export import generate_nmea_export
 from backend.reports.kml_export import generate_kml_export
+from backend.aws.s3_service import S3Service
+from backend.aws.bedrock_service import BedrockService
 from backend.schemas.detection import (
     AnalysisResponse, AnalysisSummary, DetectionRecord, FileMetadata,
     GeospatialMetadata, ModelMetadata, BoundingBox, CenterPixel, Geolocation,
-    format_object_type
+    BenthicEcologicalAssessment, format_object_type
 )
+
 
 router = APIRouter(tags=["Analysis"])
 
@@ -322,6 +325,15 @@ def run_full_pipeline(
         **engine.get_metadata()
     )
 
+    # 7. Amazon Bedrock Benthic Ecological Assessment
+    bedrock_svc = BedrockService()
+    benthic_assessment_data = bedrock_svc.generate_benthic_assessment(
+        summary=summary.model_dump(),
+        detections=[d.model_dump() for d in detections_list],
+        geospatial_meta=geo_meta_raw
+    )
+    benthic_assessment = BenthicEcologicalAssessment(**benthic_assessment_data)
+
     # Construct response dictionary for exports
     analysis_dict = {
         "analysis_id": analysis_id,
@@ -330,10 +342,11 @@ def run_full_pipeline(
         "detections": [d.model_dump() for d in detections_list],
         "file_metadata": file_metadata.model_dump(),
         "geospatial_metadata": geospatial_metadata.model_dump(),
-        "model_metadata": model_metadata.model_dump()
+        "model_metadata": model_metadata.model_dump(),
+        "benthic_assessment": benthic_assessment.model_dump()
     }
 
-    # 7. Generate Reports & C2 Naval Exports
+    # 8. Generate Reports & C2 Naval Exports
     csv_content = generate_csv_report([d.model_dump() for d in detections_list], geo_meta_raw)
     csv_save_path.write_text(csv_content)
 
@@ -352,6 +365,11 @@ def run_full_pipeline(
         output_path=str(pdf_save_path)
     )
 
+    # 9. Amazon S3 Cloud Synchronization (Optional / Graceful Fallback)
+    s3_svc = S3Service()
+    aws_artifacts = s3_svc.sync_analysis_artifacts(analysis_id, analysis_dir)
+
+
     return AnalysisResponse(
         analysis_id=analysis_id,
         timestamp=analysis_dict["timestamp"],
@@ -360,6 +378,8 @@ def run_full_pipeline(
         file_metadata=file_metadata,
         geospatial_metadata=geospatial_metadata,
         model_metadata=model_metadata,
+        benthic_assessment=benthic_assessment,
+        aws_artifacts=aws_artifacts,
         original_image_url=f"/api/export/{analysis_id}/original",
         annotated_image_url=f"/api/export/{analysis_id}/annotated",
         detection_mask_url=f"/api/export/{analysis_id}/mask",
@@ -372,6 +392,7 @@ def run_full_pipeline(
         kml_export_url=f"/api/export/{analysis_id}/kml",
         bundle_export_url=f"/api/export/{analysis_id}/bundle"
     )
+
 
 @router.post("/analyze", response_model=AnalysisResponse)
 async def analyze_image(
