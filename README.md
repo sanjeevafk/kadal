@@ -281,12 +281,11 @@ KADAL integrates cloud native services to support scalable oceanic survey archiv
 
 ## Authors & Contributors
 
-### Team Innovation Igniters
+### Team Edge Runners
 
-* **Sanjeev Kumar S**
-* **Ashish S**
+* **Sanjeev Kumar** (Team Lead)
+* **Ashish**
 * **Kamlesh Y**
-* **Prajan SS**
-* **Sangamithra B**
-* **Sudhishna P**
+* **Prajan**
+
 
