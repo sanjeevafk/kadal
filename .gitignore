@@ -69,3 +69,6 @@ mlruns/
 # Local notebooks (keep only Colab ones)
 Downloads/*.ipynb
 lessons
+
+# Documentation artifacts
+docs/
