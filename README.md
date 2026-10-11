@@ -247,42 +247,9 @@ To run live GPU/CPU ONNX tensor inference:
 
 KADAL integrates cloud native services to support scalable oceanic survey archival, multi-vessel telemetry sync, and GenAI-powered ecological impact modeling:
 
-```mermaid
-graph TD
-    classDef clientStyle fill:#e0f2fe,stroke:#0284c7,stroke-width:2px,color:#0f172a;
-    classDef edgeStyle fill:#f1f5f9,stroke:#475569,stroke-width:2px,color:#0f172a;
-    classDef computeStyle fill:#ecfdf5,stroke:#059669,stroke-width:2px,color:#064e3b;
-    classDef aiStyle fill:#fef2f2,stroke:#dc2626,stroke-width:2px,color:#7f1d1d;
-    classDef storageStyle fill:#fefce8,stroke:#ca8a04,stroke-width:2px,color:#713f12;
-
-    subgraph UserPlane["Client & Ingress Layer"]
-        A["Web Browser / Field Station"]:::clientStyle
-        B["Nginx Reverse Proxy (Port 443 TLS)"]:::edgeStyle
-    end
-
-    subgraph EC2Plane["AWS EC2 Compute Host (t3.medium)"]
-        C["FastAPI Application Server (Port 8000)"]:::computeStyle
-        D["YOLOv8-ESI ML Engine (SAHI + Soft-NMS)"]:::computeStyle
-        E["Spatial Georeferencer (EPSG:26916 to WGS84)"]:::computeStyle
-    end
-
-    subgraph AWSCloud["AWS Managed Cloud Services"]
-        F["Amazon ECR (Container Image)"]:::storageStyle
-        G["Amazon Bedrock (Claude 3.5 Sonnet)"]:::aiStyle
-        H[("Amazon S3 Data Lake (10 Artifacts)")]:::storageStyle
-    end
-
-    A -->|"HTTPS / REST"| B
-    B -->|"Proxy Pass"| C
-    F -.->|"Pull Container"| C
-    C -->|"Sliced Sonar Tiles"| D
-    D -->|"Pixel Bounding Boxes"| E
-    E -->|"Target GPS Coordinates"| C
-    C -->|"Benthic Mensuration Prompt"| G
-    G -->|"Ecological Risk Assessment"| C
-    C -->|"Sync PDF, KML, CSV & Mask"| H
-    H -->|"Presigned S3 Assets"| A
-```
+<div align="center">
+  <img src="docs/assets/architecture.png" alt="KADAL AWS Cloud Architecture" width="100%" />
+</div>
 
 1. **Amazon S3 (`kadal-marine-intelligence`)**:
    - Secure persistent storage for high-resolution side-scan sonar GeoTIFFs, full survey waterfalls, generated publication-grade PDF intelligence dossiers, and CSV/KML/NMEA tactical target bundles.
@@ -293,7 +260,6 @@ graph TD
    - Includes seamless, deterministic offline domain calibration when running edge deployments without active satellite/cloud connectivity.
 
 ## Alignment with Global Environmental Goals
-
 
 * **UN SDG 14: Life Below Water**: Autonomous spatial mapping of benthic plastics, ghost gear, and discarded fishing nets to direct cleanup vessels to high-density debris hotspots.
 * **Marine Habitat Protection & Blue Economy**: Deep-tech AI for coastal environmental surveillance, sanctuary preservation, and reef protection.
@@ -315,5 +281,12 @@ graph TD
 
 ## Authors & Contributors
 
-* Sanjeev Kumar and collaborators.
+### Team Innovation Igniters
+
+* **Sanjeev Kumar S**
+* **Ashish S**
+* **Kamlesh Y**
+* **Prajan SS**
+* **Sangamithra B**
+* **Sudhishna P**
 
