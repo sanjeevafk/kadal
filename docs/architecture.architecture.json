@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "KADAL Marine Intelligence Architecture",
+    "output": "docs/architecture.html",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "e2e-request-flow",
+        "label": "End-to-End Analysis Flow",
+        "focus": ["client", "nginx", "fastapi", "yolo", "s3", "bedrock"],
+        "note": "Follow client requests through TLS termination, CV processing, and cloud persistence."
+      },
+      {
+        "id": "aws-cloud-tier",
+        "label": "AWS Cloud Managed Tier",
+        "focus": ["ecr", "fastapi", "s3", "bedrock"],
+        "note": "See compute, storage, and GenAI managed services in us-east-1."
+      },
+      {
+        "id": "mission-ops-tier",
+        "label": "Tactical Mission Exports",
+        "focus": ["fastapi", "kml_engine", "client"],
+        "note": "Autonomous waypoint and dive plan generation for marine recovery teams."
+      }
+    ]
+  },
+  "components": [
+    { "id": "client", "type": "frontend", "label": "Web Client", "sublabel": "React + MapLibre", "pos": [50, 280], "size": [130, 60], "tag": "HTTPS" },
+    { "id": "nginx", "type": "security", "label": "Nginx Proxy", "sublabel": "TLS :443 (Let's Encrypt)", "pos": [250, 280], "size": [150, 60] },
+    { "id": "fastapi", "type": "backend", "label": "FastAPI Core", "sublabel": "Uvicorn Engine :8000", "pos": [470, 280], "size": [150, 60] },
+    { "id": "ecr", "type": "cloud", "label": "Amazon ECR", "sublabel": "Docker Container", "pos": [470, 130], "size": [150, 60], "tag": "Registry" },
+    { "id": "yolo", "type": "backend", "label": "YOLO-ESI Engine", "sublabel": "SAHI + Soft-NMS", "pos": [690, 280], "size": [150, 60] },
+    { "id": "bedrock", "type": "security", "label": "Amazon Bedrock", "sublabel": "Claude 3.5 Sonnet", "pos": [690, 430], "size": [150, 60], "tag": "Eco-Triage" },
+    { "id": "s3", "type": "cloud", "label": "Amazon S3", "sublabel": "10 Artifact Types", "pos": [910, 280], "size": [150, 60], "tag": "Lake" },
+    { "id": "kml_engine", "type": "database", "label": "Spatial Georef", "sublabel": "KML + NMEA 0183", "pos": [470, 430], "size": [150, 60] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "AWS Region: us-east-1", "wraps": ["ecr", "nginx", "fastapi", "yolo", "bedrock", "s3", "kml_engine"] },
+    { "kind": "security-group", "label": "kadal-web-sg (EC2 t3.medium)", "wraps": ["nginx", "fastapi", "yolo", "kml_engine"] }
+  ],
+  "connections": [
+    { "id": "c-client-nginx", "from": "client", "to": "nginx", "label": "HTTPS", "variant": "emphasis" },
+    { "id": "c-nginx-fastapi", "from": "nginx", "to": "fastapi", "label": "reverse proxy" },
+    { "id": "c-ecr-fastapi", "from": "ecr", "to": "fastapi", "label": "image pull", "variant": "dashed", "fromSide": "bottom", "toSide": "top", "labelDy": 40 },
+    { "id": "c-fastapi-yolo", "from": "fastapi", "to": "yolo", "label": "tiled slices", "variant": "emphasis" },
+    { "id": "c-yolo-s3", "from": "yolo", "to": "s3", "label": "detections", "variant": "emphasis" },
+    { "id": "c-fastapi-bedrock", "from": "fastapi", "to": "bedrock", "label": "risk prompt", "variant": "security", "fromSide": "right", "toSide": "top" },
+    { "id": "c-bedrock-s3", "from": "bedrock", "to": "s3", "label": "AI report", "fromSide": "right", "toSide": "bottom" },
+    { "id": "c-fastapi-kml", "from": "fastapi", "to": "kml_engine", "label": "coordinates", "variant": "dashed", "fromSide": "bottom", "toSide": "top", "labelDy": 40 }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Ingress & Edge Security",
+      "items": [
+        "Let's Encrypt TLS termination on port 443 via Nginx reverse proxy",
+        "Automated HTTP to HTTPS redirect with strict security headers"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "EC2 & Computer Vision Core",
+      "items": [
+        "FastAPI service running inside Docker pulled from Amazon ECR",
+        "YOLO-ESI debris detection combined with SAHI window slicing for high-res GeoTIFFs",
+        "EPSG:26916 to WGS84 spatial conversion for marine dive planning (KML/NMEA)"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Cloud Intelligence & Lake",
+      "items": [
+        "Amazon Bedrock (Claude 3.5 Sonnet) generates ecological risk assessments",
+        "Amazon S3 bucket stores 10 analysis artifacts per survey for full auditability"
+      ]
+    }
+  ]
+}

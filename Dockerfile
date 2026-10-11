@@ -13,11 +13,13 @@ RUN npm run build
 FROM python:3.11-slim
 WORKDIR /app
 
-# Install runtime dependencies for OpenCV & ONNX Runtime
+# Install runtime dependencies for OpenCV, GDAL/Rasterio & ONNX Runtime
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libglib2.0-0 \
     libgomp1 \
+    libexpat1 \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Install production Python dependencies (no PyTorch / CUDA overhead)
 COPY requirements-prod.txt .

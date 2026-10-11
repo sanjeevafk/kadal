@@ -231,26 +231,57 @@ To run live GPU/CPU ONNX tensor inference:
    ```
 2. Restart the app (`./start.sh`). The backend will automatically bind the model and display execution provider details (`CUDAExecutionProvider` or `CPUExecutionProvider`).
 
+## Live Production Deployment
+
+**Live Web Application (AWS HTTPS):**  
+👉 **[https://32.193.33.230.sslip.io](https://32.193.33.230.sslip.io)**
+
+* **Hosting:** AWS EC2 (`t3.medium`) with Nginx TLS Termination (Let's Encrypt SSL)
+* **Storage Lake:** Amazon S3 (`s3://kadal-marine-intelligence-071732232995`)
+* **Ecological Intelligence:** Amazon Bedrock (`anthropic.claude-3-5-sonnet-20241022-v2:0`)
+* **Container Registry:** Amazon ECR (`071732232995.dkr.ecr.us-east-1.amazonaws.com/kadal:latest`)
+
+---
+
 ## AWS Cloud Architecture & Environmental Intelligence Integration
 
 KADAL integrates cloud native services to support scalable oceanic survey archival, multi-vessel telemetry sync, and GenAI-powered ecological impact modeling:
 
-```
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                           KADAL SURVEY PIPELINE                                 │
-│                                                                                 │
-│   Sonar Ingestion         YOLOv8-ESI Inference        AWS Cloud Integration     │
-│   ┌─────────────┐         ┌───────────────────┐       ┌───────────────────────┐ │
-│   │ GeoTIFF/XTF │ ──────> │ ONNX Runtime Edge │ ────> │ Amazon S3             │ │
-│   │ Imagery     │         │ Acoustic Physics  │       │ Survey Artifact Store │ │
-│   └─────────────┘         └───────────────────┘       └──────────┬────────────┘ │
-│                                                                  │              │
-│                                                       ┌──────────▼────────────┐ │
-│                                                       │ Amazon Bedrock        │ │
-│                                                       │ Claude 3.5 Sonnet     │ │
-│                                                       │ Benthic Impact Model  │ │
-│                                                       └───────────────────────┘ │
-└─────────────────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    classDef clientStyle fill:#e0f2fe,stroke:#0284c7,stroke-width:2px,color:#0f172a;
+    classDef edgeStyle fill:#f1f5f9,stroke:#475569,stroke-width:2px,color:#0f172a;
+    classDef computeStyle fill:#ecfdf5,stroke:#059669,stroke-width:2px,color:#064e3b;
+    classDef aiStyle fill:#fef2f2,stroke:#dc2626,stroke-width:2px,color:#7f1d1d;
+    classDef storageStyle fill:#fefce8,stroke:#ca8a04,stroke-width:2px,color:#713f12;
+
+    subgraph UserPlane["Client & Ingress Layer"]
+        A["Web Browser / Field Station"]:::clientStyle
+        B["Nginx Reverse Proxy (Port 443 TLS)"]:::edgeStyle
+    end
+
+    subgraph EC2Plane["AWS EC2 Compute Host (t3.medium)"]
+        C["FastAPI Application Server (Port 8000)"]:::computeStyle
+        D["YOLOv8-ESI ML Engine (SAHI + Soft-NMS)"]:::computeStyle
+        E["Spatial Georeferencer (EPSG:26916 to WGS84)"]:::computeStyle
+    end
+
+    subgraph AWSCloud["AWS Managed Cloud Services"]
+        F["Amazon ECR (Container Image)"]:::storageStyle
+        G["Amazon Bedrock (Claude 3.5 Sonnet)"]:::aiStyle
+        H[("Amazon S3 Data Lake (10 Artifacts)")]:::storageStyle
+    end
+
+    A -->|"HTTPS / REST"| B
+    B -->|"Proxy Pass"| C
+    F -.->|"Pull Container"| C
+    C -->|"Sliced Sonar Tiles"| D
+    D -->|"Pixel Bounding Boxes"| E
+    E -->|"Target GPS Coordinates"| C
+    C -->|"Benthic Mensuration Prompt"| G
+    G -->|"Ecological Risk Assessment"| C
+    C -->|"Sync PDF, KML, CSV & Mask"| H
+    H -->|"Presigned S3 Assets"| A
 ```
 
 1. **Amazon S3 (`kadal-marine-intelligence`)**:
