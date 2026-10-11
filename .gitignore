@@ -72,3 +72,8 @@ lessons
 
 # Documentation artifacts
 docs/
+
+# Presentation and raw slide assets
+assets/architecture-1.png
+assets/intro.png
+assets/outro.png
