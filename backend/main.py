@@ -63,6 +63,9 @@ if FRONTEND_DIST.exists():
     async def serve_frontend(request: Request, full_path: str):
         if full_path.startswith("api") or full_path.startswith("static"):
             return None
+        file_path = FRONTEND_DIST / full_path
+        if full_path and file_path.is_file():
+            return FileResponse(str(file_path))
         index_file = FRONTEND_DIST / "index.html"
         if index_file.exists():
             return FileResponse(str(index_file))

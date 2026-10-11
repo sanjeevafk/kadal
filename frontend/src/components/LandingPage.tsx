@@ -65,7 +65,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch }) => {
             <a href="#about" className="hover:text-white transition-colors duration-200">About</a>
             <a href="#features" className="hover:text-white transition-colors duration-200">Features</a>
             <a href="#data" className="hover:text-white transition-colors duration-200">Data</a>
-            <a href="#contact" className="hover:text-white transition-colors duration-200">Contact</a>
             <div className="h-6 w-px bg-slate-700" />
             <div className="flex items-center gap-1.5 text-emerald-400">
               <Zap className="h-3.5 w-3.5" />
