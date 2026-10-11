@@ -49,7 +49,7 @@
 ## AWS Cloud Architecture
 
 <div align="center">
-  <img src="assets/architecture.png" alt="KADAL AWS Cloud Architecture" width="100%" />
+  <img src="assets/architecture-1.png" alt="KADAL AWS Cloud Architecture" width="100%" />
 </div>
 
 * **Amazon EC2 (`t3.medium`):** Runs the containerized FastAPI backend, ONNX Runtime inference engine, and Nginx reverse proxy with automated TLS termination.
